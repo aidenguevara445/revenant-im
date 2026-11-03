@@ -1,19 +1,19 @@
 # Implementation Plan: Revenant Shell
 
-- [ ] 1. Project foundation
+- [x] 1. Project foundation
   - Remove template demo content (Versions component, electron logo, wavy lines).
   - Add `src/shared/types.ts` and `src/shared/ipc.ts`; set app name/productName to "Revenant IM".
   - Add Vitest + fast-check, `npm test` script.
   - _Requirements: 2, 5_
 
-- [ ] 2. Haunted theme and retro chrome
+- [x] 2. Haunted theme and retro chrome
   - `theme/tokens.css` palette, pixel font, window chrome styles, fog background (reduced-motion aware).
   - _Requirements: 6.1, 6.4_
 
-- [ ] 3. Window manager
-  - [ ] 3.1 WindowManager reducer + RetroWindow drag/focus/minimize + Taskbar.
-  - [ ] 3.2 Persist window positions.
-  - [ ] 3.3 Unit and property tests for the reducer.
+- [x] 3. Window manager
+  - [x] 3.1 WindowManager reducer + RetroWindow drag/focus/minimize + Taskbar.
+  - [x] 3.2 Persist window positions.
+  - [x] 3.3 Unit and property tests for the reducer.
   - _Requirements: 2_
 
 - [ ] 4. Synthesized sounds

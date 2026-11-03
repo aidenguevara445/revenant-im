@@ -1,34 +1,93 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import { useEffect, useRef } from 'react'
+import { WindowManagerProvider, useWindowManager } from './desktop/WindowManagerProvider'
+import RetroWindow from './desktop/RetroWindow'
+import Taskbar from './desktop/Taskbar'
+import { sortedByZ } from './desktop/windowManager'
 
-function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+// ── Desktop content ─────────────────────────────────────────────
+
+function Desktop(): React.JSX.Element {
+  const wm = useWindowManager()
+  const openedRef = useRef(false)
+
+  // Open one demo window on first render
+  useEffect(() => {
+    if (!openedRef.current) {
+      openedRef.current = true
+      wm.open('buddyList', 'revenant — buddy list', 280, 360)
+    }
+  }, [wm])
+
+  const sorted = sortedByZ(wm.windows)
 
   return (
     <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
+      {/* Fog background */}
+      <div className="rv-fog">
+        <div className="rv-fog-layer" />
+        <div className="rv-fog-layer" />
+        <div className="rv-fog-layer" />
       </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
+
+      {/* Desktop area */}
+      <div className="rv-desktop">
+        {sorted.map((win) => (
+          <RetroWindow
+            key={win.id}
+            win={win}
+            active={win.id === wm.activeId}
+            title={wm.titles[win.id] ?? win.kind}
+            bounds={wm.bounds}
+            onFocus={wm.focus}
+            onClose={wm.close}
+            onMinimize={wm.minimize}
+            onMove={wm.move}
+          >
+            <div style={{ padding: '8px', color: 'var(--rv-text-dim)' }}>
+              <p style={{ color: 'var(--rv-ghost)', marginBottom: '8px' }}>
+                👻 revenant im — placeholder
+              </p>
+              <p>
+                window: {win.id}
+                <br />
+                kind: {win.kind}
+                <br />
+                position: {win.x}, {win.y}
+                <br />
+                z: {win.z} · minimized: {String(win.minimized)}
+              </p>
+              <p style={{ marginTop: '12px', fontSize: '11px', opacity: 0.6 }}>
+                drag the title bar to move · use – and ✕ to minimize/close
+              </p>
+            </div>
+          </RetroWindow>
+        ))}
       </div>
-      <Versions></Versions>
+
+      {/* Taskbar */}
+      <Taskbar
+        windows={wm.windows}
+        titles={wm.titles}
+        activeId={wm.activeId}
+        flashing={wm.flashing}
+        onTaskbarClick={(id) => {
+          const win = wm.windows.find((w) => w.id === id)
+          if (win?.minimized) {
+            wm.restore(id)
+          } else {
+            wm.focus(id)
+          }
+        }}
+      />
     </>
+  )
+}
+
+function App(): React.JSX.Element {
+  return (
+    <WindowManagerProvider bounds={{ width: window.innerWidth, height: window.innerHeight - 44 }}>
+      <Desktop />
+    </WindowManagerProvider>
   )
 }
 

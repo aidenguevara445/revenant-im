@@ -1,0 +1,316 @@
+/* ═════════════════════════════════════════════════════════════════
+   Revenant IM — Theme Tokens
+   Haunted dark-purple / ghost-green palette with pixel-style chrome.
+   ═════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Palette ─────────────────────────────────────────────────── */
+
+  /* Deep haunted purples */
+  --rv-bg-deep: #0d0a1a;
+  --rv-bg-mid: #161228;
+  --rv-bg-soft: #1e1838;
+  --rv-panel: #241a45;
+  --rv-panel-light: #2d2257;
+
+  /* Ghost green accents */
+  --rv-ghost: #39ff9e;
+  --rv-ghost-dim: #2ac778;
+  --rv-ghost-glow: rgba(57, 255, 158, 0.35);
+  --rv-ghost-faint: rgba(57, 255, 158, 0.12);
+
+  /* Purple accent */
+  --rv-purple: #8b5cf6;
+  --rv-purple-dim: #6d3fb8;
+  --rv-purple-glow: rgba(139, 92, 246, 0.3);
+
+  /* Text */
+  --rv-text: #d4cff0;
+  --rv-text-dim: #8b83b8;
+  --rv-text-bright: #f0edff;
+
+  /* Window chrome */
+  --rv-titlebar: #2d2257;
+  --rv-titlebar-active: #3d2d75;
+  --rv-chrome-border: #4a3a80;
+  --rv-chrome-shadow: 0 0 0 1px var(--rv-chrome-border), 0 8px 24px rgba(0, 0, 0, 0.6);
+
+  /* Title bar button colors */
+  --rv-btn-close: #e0506e;
+  --rv-btn-close-hover: #ff6b7a;
+  --rv-btn-min: #e0b84e;
+  --rv-btn-min-hover: #ffd06a;
+
+  /* Taskbar */
+  --rv-taskbar-bg: rgba(13, 10, 26, 0.92);
+  --rv-taskbar-border: var(--rv-chrome-border);
+  --rv-taskbar-btn: var(--rv-panel);
+  --rv-taskbar-btn-active: var(--rv-titlebar-active);
+  --rv-taskbar-btn-hover: var(--rv-panel-light);
+
+  /* Fog */
+  --rv-fog-color: rgba(90, 60, 160, 0.07);
+
+  /* Sizing */
+  --rv-titlebar-h: 28px;
+  --rv-taskbar-h: 44px;
+  --rv-window-radius: 0px;
+
+  /* Pixel-style font stack — monospace with retro feel */
+  --rv-font-pixel: 'Courier New', 'Lucida Console', monospace;
+  --rv-font-body: 'Courier New', 'Lucida Console', monospace;
+}
+
+/* ── Base ──────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--rv-text);
+  background: var(--rv-bg-deep);
+  font-family: var(--rv-font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  user-select: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: none;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* ── Fog background animation ──────────────────────────────────── */
+
+.rv-fog {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--rv-bg-deep);
+}
+
+.rv-fog-layer {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background-image:
+    radial-gradient(ellipse 40% 30% at 30% 40%, var(--rv-fog-color), transparent),
+    radial-gradient(ellipse 35% 25% at 70% 60%, var(--rv-fog-color), transparent),
+    radial-gradient(ellipse 30% 35% at 50% 20%, var(--rv-fog-color), transparent),
+    radial-gradient(ellipse 45% 20% at 80% 80%, var(--rv-fog-color), transparent);
+  animation: rv-fog-drift 40s linear infinite;
+  opacity: 0.8;
+}
+
+.rv-fog-layer:nth-child(2) {
+  animation-duration: 60s;
+  animation-direction: reverse;
+  opacity: 0.5;
+}
+
+.rv-fog-layer:nth-child(3) {
+  animation-duration: 80s;
+  opacity: 0.3;
+}
+
+@keyframes rv-fog-drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(5%, 3%) rotate(180deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg);
+  }
+}
+
+/* ── Retro window chrome ───────────────────────────────────────── */
+
+.rv-window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--rv-panel);
+  border: 1px solid var(--rv-chrome-border);
+  border-radius: var(--rv-window-radius);
+  box-shadow: var(--rv-chrome-shadow);
+  font-family: var(--rv-font-pixel);
+}
+
+.rv-titlebar {
+  height: var(--rv-titlebar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  background: var(--rv-titlebar);
+  border-bottom: 1px solid var(--rv-chrome-border);
+  cursor: grab;
+  user-select: none;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rv-titlebar:active {
+  cursor: grabbing;
+}
+
+.rv-window--active .rv-titlebar {
+  background: var(--rv-titlebar-active);
+}
+
+.rv-titlebar-text {
+  flex: 1;
+  font-size: 11px;
+  color: var(--rv-ghost);
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 4px var(--rv-ghost-glow);
+}
+
+.rv-titlebar-btn {
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+}
+
+.rv-titlebar-btn:hover {
+  opacity: 0.85;
+}
+
+.rv-btn-min {
+  background: var(--rv-btn-min);
+}
+.rv-btn-min:hover {
+  background: var(--rv-btn-min-hover);
+}
+
+.rv-btn-close {
+  background: var(--rv-btn-close);
+}
+.rv-btn-close:hover {
+  background: var(--rv-btn-close-hover);
+}
+
+.rv-window-body {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+  color: var(--rv-text);
+  background: var(--rv-bg-mid);
+}
+
+.rv-window--minimized {
+  display: none;
+}
+
+/* ── Taskbar ───────────────────────────────────────────────────── */
+
+.rv-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--rv-taskbar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  gap: 4px;
+  background: var(--rv-taskbar-bg);
+  border-top: 1px solid var(--rv-taskbar-border);
+  z-index: 100000;
+}
+
+.rv-taskbar-btn {
+  height: 32px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--rv-taskbar-btn);
+  border: 1px solid var(--rv-chrome-border);
+  color: var(--rv-text);
+  font-family: var(--rv-font-pixel);
+  font-size: 11px;
+  cursor: pointer;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rv-taskbar-btn:hover {
+  background: var(--rv-taskbar-btn-hover);
+}
+
+.rv-taskbar-btn--active {
+  background: var(--rv-taskbar-btn-active);
+  border-color: var(--rv-ghost-dim);
+}
+
+.rv-taskbar-btn--flash {
+  animation: rv-flash 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes rv-flash {
+  from {
+    border-color: var(--rv-chrome-border);
+  }
+  to {
+    border-color: var(--rv-ghost);
+    box-shadow: 0 0 6px var(--rv-ghost-glow);
+  }
+}
+
+/* ── Desktop ───────────────────────────────────────────────────── */
+
+.rv-desktop {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--rv-taskbar-h));
+  z-index: 1;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-fog-layer {
+    animation: none;
+  }
+
+  .rv-taskbar-btn--flash {
+    animation: none;
+    border-color: var(--rv-ghost);
+  }
+
+  * {
+    transition: none !important;
+  }
+}
