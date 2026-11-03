@@ -147,6 +147,27 @@ export function getKey(id: string): string {
 }
 
 /**
+ * Get key metadata by ID.
+ * @param id - Key ID
+ * @returns KeyMeta with provider and baseUrl
+ * @throws If key not found
+ */
+export function getKeyMeta(id: string): KeyMeta {
+  const store = loadStore()
+  const storedKey = store.keys.find((k) => k.id === id)
+  if (!storedKey) {
+    throw new Error(`Key not found: ${id}`)
+  }
+  return {
+    id: storedKey.id,
+    label: storedKey.label,
+    provider: storedKey.provider,
+    baseUrl: storedKey.baseUrl,
+    hasKey: true
+  }
+}
+
+/**
  * Get a key by provider and optional label (convenience for orchestrator).
  * Returns the first matching key.
  * @param provider - Provider kind

@@ -1,13 +1,13 @@
 # Implementation Plan: Revenant Orchestrator
 
-- [ ] 1. Shared types and pricing
+- [x] 1. Shared types and pricing
   - `src/main/providers/types.ts`, `src/shared/pricing.ts` (editable price table).
   - _Requirements: 1.2, 5.4_
 
-- [ ] 2. Provider adapters
-  - [ ] 2.1 `anthropic.ts` (Messages API, usage, error mapping, abort).
-  - [ ] 2.2 `openaiCompatible.ts` (base URL; works for OpenAI, DeepSeek, OpenRouter, Groq, Ollama).
-  - [ ] 2.3 Unit tests with mocked `fetch`.
+- [x] 2. Provider adapters
+  - [x] 2.1 `anthropic.ts` (Messages API, usage, error mapping, abort).
+  - [x] 2.2 `openaiCompatible.ts` (base URL; works for OpenAI, DeepSeek, OpenRouter, Groq, Ollama).
+  - [x] 2.3 Unit tests with mocked `fetch`.
   - _Requirements: 1_
 
 - [ ] 3. Contracts

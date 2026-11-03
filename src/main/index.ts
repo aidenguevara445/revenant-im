@@ -4,7 +4,12 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { IPC } from '../shared/ipc'
 import * as keystore from './keystore'
+import * as team from './team'
+import * as settings from './settings'
 import type { KeyMeta, ProviderKind } from '../shared/types'
+import { AnthropicProvider } from './providers/anthropic'
+import { OpenAICompatibleProvider } from './providers/openaiCompatible'
+import { ProviderError } from './providers/types'
 
 function createWindow(): void {
   // Create the browser window.
@@ -101,9 +106,53 @@ app.whenReady().then(() => {
     IPC.keysTest,
     async (_event, keyId: string): Promise<{ success: boolean; error?: string }> => {
       try {
-        // For now, just verify we can decrypt the key
-        keystore.getKey(keyId)
-        return { success: true }
+        // Get the key and its metadata
+        const apiKey = keystore.getKey(keyId)
+        const meta = keystore.getKeyMeta(keyId)
+
+        // Create appropriate provider
+        let provider
+        if (meta.provider === 'anthropic') {
+          provider = new AnthropicProvider({ apiKey })
+        } else if (meta.provider === 'openai-compatible') {
+          if (!meta.baseUrl) {
+            return { success: false, error: 'Base URL is missing for OpenAI-compatible provider' }
+          }
+          provider = new OpenAICompatibleProvider({ apiKey, baseUrl: meta.baseUrl })
+        } else {
+          return { success: false, error: `Unknown provider: ${meta.provider}` }
+        }
+
+        // Make a minimal test request with timeout
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+        try {
+          await provider.chat(
+            {
+              model: 'test',
+              messages: [{ role: 'user', content: 'test' }],
+              maxTokens: 1
+            },
+            controller.signal
+          )
+          clearTimeout(timeoutId)
+          return { success: true }
+        } catch (err) {
+          clearTimeout(timeoutId)
+          if (err instanceof ProviderError) {
+            // Map ProviderError kinds to user-friendly messages
+            const messages: Record<string, string> = {
+              auth: 'Wrong key or unauthorized',
+              rate_limit: 'Rate limited',
+              network: 'Network error',
+              bad_request: 'Invalid request (may need different model)',
+              server: 'Server error'
+            }
+            return { success: false, error: messages[err.kind] || err.message }
+          }
+          return { success: false, error: String(err) }
+        }
       } catch (err) {
         return { success: false, error: String(err) }
       }
@@ -113,23 +162,29 @@ app.whenReady().then(() => {
   // ── IPC handlers for team and settings (placeholders) ──────────
 
   ipcMain.handle(IPC.teamGet, async () => {
-    // TODO: implement team storage
-    return { main: null, buddies: [] }
+    return team.getTeam()
   })
 
-  ipcMain.handle(IPC.teamSet, async () => {
-    // TODO: implement team storage
-    return { success: true }
+  ipcMain.handle(IPC.teamSet, async (_event, teamData) => {
+    try {
+      team.setTeam(teamData)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: String(err) }
+    }
   })
 
   ipcMain.handle(IPC.settingsGet, async () => {
-    // TODO: implement settings storage
-    return { maxAttempts: 2, escalationTarget: 'main', muted: false }
+    return settings.getSettings()
   })
 
-  ipcMain.handle(IPC.settingsSet, async () => {
-    // TODO: implement settings storage
-    return { success: true }
+  ipcMain.handle(IPC.settingsSet, async (_event, partial) => {
+    try {
+      settings.updateSettings(partial)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: String(err) }
+    }
   })
 
   // ───────────────────────────────────────────────────────────────

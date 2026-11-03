@@ -28,11 +28,11 @@
 - [x] 6. Sign-On window
   - _Requirements: 1_
 
-- [ ] 7. Preferences window (Keys, Team, Rules tabs)
+- [x] 7. Preferences window (Keys, Team, Rules tabs)
   - Key "Test" calls the provider adapter from the orchestrator spec (task 2 there).
   - _Requirements: 5_
 
-- [ ] 8. Buddy List window
+- [x] 8. Buddy List window
   - Groups, statuses, away messages, double-click to IM, drag to Main.
   - _Requirements: 3_
 
