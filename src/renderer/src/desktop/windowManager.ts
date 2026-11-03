@@ -62,10 +62,7 @@ export function createInitialState(): WindowState[] {
 
 // ── Reducer ──────────────────────────────────────────────────────
 
-export function windowManagerReducer(
-  state: WindowState[],
-  action: WindowAction
-): WindowState[] {
+export function windowManagerReducer(state: WindowState[], action: WindowAction): WindowState[] {
   switch (action.type) {
     case 'open': {
       const z = nextZ(state)
@@ -108,9 +105,7 @@ export function windowManagerReducer(
 
     case 'restore': {
       const topZ = nextZ(state)
-      return state.map((w) =>
-        w.id === action.id ? { ...w, minimized: false, z: topZ } : w
-      )
+      return state.map((w) => (w.id === action.id ? { ...w, minimized: false, z: topZ } : w))
     }
 
     default:

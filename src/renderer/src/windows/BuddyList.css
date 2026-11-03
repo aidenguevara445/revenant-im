@@ -1,0 +1,101 @@
+/* BuddyList window styles */
+
+.buddylist-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-darker);
+  color: var(--text);
+}
+
+.buddylist-header {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-dark);
+}
+
+.buddylist-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-online {
+  background: var(--accent);
+  box-shadow: 0 0 4px var(--accent);
+}
+
+.screen-name {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.buddylist-groups {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.buddy-group {
+  margin-bottom: 0.5rem;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.group-icon {
+  font-size: 1rem;
+}
+
+.group-buddies {
+  padding: 0 0.75rem;
+}
+
+.buddy-placeholder {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+}
+
+.buddylist-footer {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-dark);
+}
+
+.buddylist-action {
+  flex: 1;
+  padding: 0.5rem;
+  background: var(--bg-darker);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.buddylist-action:hover {
+  background: var(--bg-light);
+  border-color: var(--accent);
+}

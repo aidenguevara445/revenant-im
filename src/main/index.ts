@@ -2,6 +2,9 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { IPC } from '../shared/ipc'
+import * as keystore from './keystore'
+import type { KeyMeta, ProviderKind } from '../shared/types'
 
 function createWindow(): void {
   // Create the browser window.
@@ -13,7 +16,9 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
 
@@ -49,8 +54,85 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // ── IPC handlers for keystore ──────────────────────────────────
+
+  // List all stored keys (metadata only, no key values)
+  ipcMain.handle(IPC.keysList, async (): Promise<KeyMeta[]> => {
+    return keystore.listKeys()
+  })
+
+  // Save or update a key
+  ipcMain.handle(
+    IPC.keysSave,
+    async (
+      _event,
+      args: {
+        label: string
+        provider: ProviderKind
+        key: string
+        baseUrl?: string
+        id?: string
+      }
+    ): Promise<{ success: boolean; keyId?: string; error?: string }> => {
+      try {
+        const keyId = keystore.saveKey(args.label, args.provider, args.key, args.baseUrl, args.id)
+        return { success: true, keyId }
+      } catch (err) {
+        return { success: false, error: String(err) }
+      }
+    }
+  )
+
+  // Delete a key
+  ipcMain.handle(
+    IPC.keysDelete,
+    async (_event, keyId: string): Promise<{ success: boolean; error?: string }> => {
+      try {
+        keystore.deleteKey(keyId)
+        return { success: true }
+      } catch (err) {
+        return { success: false, error: String(err) }
+      }
+    }
+  )
+
+  // Test a key (placeholder for now, will call provider adapter later)
+  ipcMain.handle(
+    IPC.keysTest,
+    async (_event, keyId: string): Promise<{ success: boolean; error?: string }> => {
+      try {
+        // For now, just verify we can decrypt the key
+        keystore.getKey(keyId)
+        return { success: true }
+      } catch (err) {
+        return { success: false, error: String(err) }
+      }
+    }
+  )
+
+  // ── IPC handlers for team and settings (placeholders) ──────────
+
+  ipcMain.handle(IPC.teamGet, async () => {
+    // TODO: implement team storage
+    return { main: null, buddies: [] }
+  })
+
+  ipcMain.handle(IPC.teamSet, async () => {
+    // TODO: implement team storage
+    return { success: true }
+  })
+
+  ipcMain.handle(IPC.settingsGet, async () => {
+    // TODO: implement settings storage
+    return { maxAttempts: 2, escalationTarget: 'main', muted: false }
+  })
+
+  ipcMain.handle(IPC.settingsSet, async () => {
+    // TODO: implement settings storage
+    return { success: true }
+  })
+
+  // ───────────────────────────────────────────────────────────────
 
   createWindow()
 

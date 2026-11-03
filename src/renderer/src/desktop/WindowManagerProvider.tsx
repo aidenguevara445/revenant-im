@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  useCallback,
-  type ReactNode
-} from 'react'
+import { useReducer, useEffect, useCallback, type ReactNode } from 'react'
 import type { WindowState, WindowKind } from '@shared/types'
 import {
   windowManagerReducer,
@@ -14,52 +7,9 @@ import {
   type WindowAction,
   type WindowBounds
 } from './windowManager'
-
-const STORAGE_KEY = 'revenant:window-positions'
-
-interface WindowManagerContextValue {
-  windows: WindowState[]
-  bounds: WindowBounds
-  activeId: string | null
-  titles: Record<string, string>
-  open: (kind: WindowKind, title: string, w: number, h: number) => void
-  close: (id: string) => void
-  focus: (id: string) => void
-  move: (id: string, x: number, y: number) => void
-  minimize: (id: string) => void
-  restore: (id: string) => void
-  /** Mark a window as flashing (unread message). */
-  setFlashing: (id: string, flashing: boolean) => void
-  flashing: Set<string>
-}
-
-const WindowManagerContext = createContext<WindowManagerContextValue | null>(null)
-
-/** Try to load saved window positions from localStorage. */
-function loadSavedPositions(): Record<string, { x: number; y: number }> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
-    const parsed = JSON.parse(raw)
-    if (typeof parsed !== 'object' || parsed === null) return {}
-    return parsed
-  } catch {
-    return {}
-  }
-}
-
-/** Save window positions to localStorage (best-effort). */
-function savePositions(windows: WindowState[]): void {
-  try {
-    const data: Record<string, { x: number; y: number }> = {}
-    for (const w of windows) {
-      data[w.id] = { x: w.x, y: w.y }
-    }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-  } catch {
-    // localStorage may be unavailable; silently ignore
-  }
-}
+import { savePositions } from './windowManagerHelpers'
+import type { WindowManagerContextValue } from './windowManagerTypes'
+import { WindowManagerContext } from './windowManagerTypes'
 
 // Combined state: windows + titles + flashing set
 interface CombinedState {
@@ -69,8 +19,7 @@ interface CombinedState {
 }
 
 type CombinedAction =
-  | (WindowAction & { title?: string })
-  | { type: 'setFlash'; id: string; value: boolean }
+  (WindowAction & { title?: string }) | { type: 'setFlash'; id: string; value: boolean }
 
 function combinedReducer(state: CombinedState, action: CombinedAction): CombinedState {
   let windows = state.windows
@@ -97,7 +46,8 @@ function combinedReducer(state: CombinedState, action: CombinedAction): Combined
 
   // Clean up title + flashing for closed windows
   if (action.type === 'close') {
-    const { [action.id]: _removed, ...rest } = titles
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [action.id]: _, ...rest } = titles
     titles = rest
     if (flashing.has(action.id)) {
       const next = new Set(flashing)
@@ -186,18 +136,7 @@ function WindowManagerProvider({
     flashing
   }
 
-  return (
-    <WindowManagerContext.Provider value={value}>{children}</WindowManagerContext.Provider>
-  )
+  return <WindowManagerContext.Provider value={value}>{children}</WindowManagerContext.Provider>
 }
 
-function useWindowManager(): WindowManagerContextValue {
-  const ctx = useContext(WindowManagerContext)
-  if (!ctx) {
-    throw new Error('useWindowManager must be used within a WindowManagerProvider')
-  }
-  return ctx
-}
-
-export { WindowManagerProvider, useWindowManager, loadSavedPositions, STORAGE_KEY }
-export type { WindowManagerContextValue, WindowAction }
+export { WindowManagerProvider }

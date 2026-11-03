@@ -16,16 +16,16 @@
   - [x] 3.3 Unit and property tests for the reducer.
   - _Requirements: 2_
 
-- [ ] 4. Synthesized sounds
+- [x] 4. Synthesized sounds
   - `sound/synth.ts` with signOn, message, buddyOn, buddyOff; mute setting.
   - _Requirements: 1.3, 1.4, 6.2_
 
-- [ ] 5. Keystore and preload bridge
-  - [ ] 5.1 `main/keystore.ts` with safeStorage.
-  - [ ] 5.2 IPC handlers + typed `window.revenant` bridge.
+- [x] 5. Keystore and preload bridge
+  - [x] 5.1 `main/keystore.ts` with safeStorage.
+  - [x] 5.2 IPC handlers + typed `window.revenant` bridge.
   - _Requirements: 5.1, 5.2_
 
-- [ ] 6. Sign-On window
+- [x] 6. Sign-On window
   - _Requirements: 1_
 
 - [ ] 7. Preferences window (Keys, Team, Rules tabs)

@@ -68,17 +68,14 @@ function RetroWindow({
     [win.id, bounds, onMove]
   )
 
-  const handlePointerUp = useCallback(
-    (e: PointerEvent<HTMLDivElement>) => {
-      dragStart.current = null
-      try {
-        e.currentTarget.releasePointerCapture(e.pointerId)
-      } catch {
-        // pointer may have been released already
-      }
-    },
-    []
-  )
+  const handlePointerUp = useCallback((e: PointerEvent<HTMLDivElement>) => {
+    dragStart.current = null
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    } catch {
+      // pointer may have been released already
+    }
+  }, [])
 
   if (win.minimized) return <></>
 

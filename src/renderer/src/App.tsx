@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { WindowManagerProvider, useWindowManager } from './desktop/WindowManagerProvider'
+import { WindowManagerProvider } from './desktop/WindowManagerProvider'
+import { useWindowManager } from './desktop/useWindowManager'
 import RetroWindow from './desktop/RetroWindow'
 import Taskbar from './desktop/Taskbar'
 import { sortedByZ } from './desktop/windowManager'
+import SignOn from './windows/SignOn'
+import BuddyList from './windows/BuddyList'
 
 // ── Desktop content ─────────────────────────────────────────────
 
@@ -10,11 +13,11 @@ function Desktop(): React.JSX.Element {
   const wm = useWindowManager()
   const openedRef = useRef(false)
 
-  // Open one demo window on first render
+  // Open SignOn window on first render
   useEffect(() => {
     if (!openedRef.current) {
       openedRef.current = true
-      wm.open('buddyList', 'revenant — buddy list', 280, 360)
+      wm.open('signon', 'Sign On', 400, 480)
     }
   }, [wm])
 
@@ -43,23 +46,7 @@ function Desktop(): React.JSX.Element {
             onMinimize={wm.minimize}
             onMove={wm.move}
           >
-            <div style={{ padding: '8px', color: 'var(--rv-text-dim)' }}>
-              <p style={{ color: 'var(--rv-ghost)', marginBottom: '8px' }}>
-                👻 revenant im — placeholder
-              </p>
-              <p>
-                window: {win.id}
-                <br />
-                kind: {win.kind}
-                <br />
-                position: {win.x}, {win.y}
-                <br />
-                z: {win.z} · minimized: {String(win.minimized)}
-              </p>
-              <p style={{ marginTop: '12px', fontSize: '11px', opacity: 0.6 }}>
-                drag the title bar to move · use – and ✕ to minimize/close
-              </p>
-            </div>
+            {renderWindowContent(win.kind)}
           </RetroWindow>
         ))}
       </div>
@@ -81,6 +68,25 @@ function Desktop(): React.JSX.Element {
       />
     </>
   )
+}
+
+function renderWindowContent(kind: string): React.JSX.Element {
+  switch (kind) {
+    case 'signon':
+      return <SignOn />
+    case 'buddyList':
+      return <BuddyList />
+    case 'preferences':
+      return (
+        <div style={{ padding: '1rem', color: 'var(--text-dim)' }}>Preferences window (TODO)</div>
+      )
+    case 'ledger':
+      return <div style={{ padding: '1rem', color: 'var(--text-dim)' }}>Ledger window (TODO)</div>
+    case 'im':
+      return <div style={{ padding: '1rem', color: 'var(--text-dim)' }}>IM window (TODO)</div>
+    default:
+      return <div style={{ padding: '1rem', color: 'var(--text-dim)' }}>Unknown window: {kind}</div>
+  }
 }
 
 function App(): React.JSX.Element {
