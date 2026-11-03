@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "name": "Typecheck on save",
+  "description": "After a TypeScript file is edited, run the typecheck and fix any errors it reports.",
+  "version": "1",
+  "when": { "type": "fileEdited", "patterns": ["src/**/*.ts", "src/**/*.tsx"] },
+  "then": { "type": "askAgent", "prompt": "A TypeScript file was just edited. Run `npm run typecheck`. If it fails, fix the errors in the files you changed without weakening types (no `any`, no ts-ignore)." }
+}

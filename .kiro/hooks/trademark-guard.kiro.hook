@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "name": "Trademark guard",
+  "description": "Keeps third-party trademarks (AIM, AOL, running-man logo) out of the UI, as the hackathon rules require.",
+  "version": "1",
+  "when": { "type": "fileEdited", "patterns": ["src/renderer/**/*", "resources/**/*", "README.md"] },
+  "then": { "type": "askAgent", "prompt": "Check the edited file for third-party trademarks: 'AIM', 'AOL', 'AOL Instant Messenger', 'Buddy List' used as a brand, the running-man logo, or original AOL sounds. Replace any with Revenant IM's own wording. Saying the app is 'inspired by early-2000s instant messengers' is fine." }
+}

@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "name": "Provider tests stay in sync",
+  "description": "When a provider adapter or the orchestrator changes, update and run its tests.",
+  "version": "1",
+  "when": { "type": "fileEdited", "patterns": ["src/main/providers/**/*.ts", "src/main/orchestrator/**/*.ts"] },
+  "then": { "type": "askAgent", "prompt": "An adapter or orchestrator file changed. Make sure its unit and property tests cover the change, then run `npm test` and fix failures. Never make a real network call in tests." }
+}
